@@ -11,6 +11,9 @@ Camera::Camera()
 	extParameters[5] = 1;
 	extParameters[10] = 1;
 	extParameters[15] = 1;
+	extParameters[12] = 0;
+	extParameters[13] = 1;
+	extParameters[14] = -4;
 }
 
 void Camera::translateLoc(float x, float y, float z)

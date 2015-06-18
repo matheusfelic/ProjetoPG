@@ -40,7 +40,7 @@ void calculateFPS();
 void drawFPS();
 void printw(float x, float y, float z, char* format, ...);
 GLvoid *font_style = GLUT_BITMAP_TIMES_ROMAN_24;
-
+float zNear = 2.0f;
 
 // -------------Global Vars End ------------
 
@@ -54,7 +54,7 @@ void display(){
 	glMatrixMode(GL_PROJECTION);
 	glViewport(0, 0, wWidth , wHeight);
 	glLoadIdentity();
-	gluPerspective(45, wWidth / (wHeight * 2), 0.1f, 3000.0f);
+	glFrustum(-1.5, 1.5, -1, 1, zNear, 500.0f);
 	cameraPrincipal.setView();
 	//-----------------------------------------------------------------------
 	
@@ -106,6 +106,8 @@ void LoadModels()
 	//objs.push_back(m);
 	Model m = Model("Resources/PolygonsWithNormals/camel.obj");
 	objs.push_back(m);
+	objs[modelIndex].translate_y = 1;
+	objs[modelIndex].translate_z = -1;
 }
 
 void printw(float x, float y, float z, char* format, ...)
@@ -183,27 +185,131 @@ void idle(void)
 	glutPostRedisplay();
 }
 
-void drawGrid() // Draws a grid...
-{
+void drawGrid() {
+	int gridL = 2;
 	glPushMatrix();
+	glTranslatef(-(gridL / 2), 0, -(gridL / 2));
+
 	glColor3f(.3, .3, .3);
+
 	glBegin(GL_LINES);
-	for (int i = 0; i <= 10; i++)
-	{
-		if (i == 0) { glColor3f(.6, .3, .3); }
-		else { glColor3f(.25, .25, .25); };
+
+	for (int i = 0; i <= gridL; i++) {
 		glVertex3f(i, 0, 0);
-		glVertex3f(i, 0, 10);
-		if (i == 0) { glColor3f(.3, .3, .6); }
-		else { glColor3f(.25, .25, .25); };
+		glVertex3f(i, 0, gridL);
 		glVertex3f(0, 0, i);
-		glVertex3f(10, 0, i);
+		glVertex3f(gridL, 0, i);
 	};
 
 	glEnd();
+	glPopMatrix();
 
+	glPushMatrix();
+	glTranslatef(-(gridL / 2), 0, -(gridL / 2));
+
+	glColor3f(1, 0, 0);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= gridL; i++) {
+		glVertex3f(i, 0, 0);
+		glVertex3f(i, gridL, 0);
+		glVertex3f(0, i, 0);
+		glVertex3f(gridL, i, 0);
+	};
+
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-(gridL / 2), 0, -(gridL / 2));
+
+	glColor3f(.3, .3, .3);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= gridL; i++) {
+		glVertex3f(0, i, 0);
+		glVertex3f(0, i, gridL);
+		glVertex3f(0, 0, i);
+		glVertex3f(0, gridL, i);
+	};
+
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef((gridL / 2), 0, -(gridL / 2));
+
+	glColor3f(.3, .3, .3);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= gridL; i++) {
+		glVertex3f(0, i, 0);
+		glVertex3f(0, i, gridL);
+		glVertex3f(0, 0, i);
+		glVertex3f(0, gridL, i);
+	};
+
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-(gridL / 2), 0, (gridL / 2));
+
+	glColor3f(.3, .3, .3);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= gridL; i++) {
+		glVertex3f(i, 0, 0);
+		glVertex3f(i, gridL, 0);
+		glVertex3f(0, i, 0);
+		glVertex3f(gridL, i, 0);
+	};
+
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-(gridL / 2), gridL, -(gridL / 2));
+
+	glColor3f(.3, .3, .3);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= gridL; i++) {
+		glVertex3f(i, 0, 0);
+		glVertex3f(i, 0, gridL);
+		glVertex3f(0, 0, i);
+		glVertex3f(gridL, 0, i);
+	};
+
+	glEnd();
 	glPopMatrix();
 }
+//void drawGrid() // Draws a grid...
+//{
+//	glPushMatrix();
+//	glColor3f(.3, .3, .3);
+//	glBegin(GL_LINES);
+//	for (int i = 0; i <= 10; i++)
+//	{
+//		if (i == 0) { glColor3f(.6, .3, .3); }
+//		else { glColor3f(.25, .25, .25); };
+//		glVertex3f(i, 0, 0);
+//		glVertex3f(i, 0, 10);
+//		if (i == 0) { glColor3f(.3, .3, .6); }
+//		else { glColor3f(.25, .25, .25); };
+//		glVertex3f(0, 0, i);
+//		glVertex3f(10, 0, i);
+//	};
+//
+//	glEnd();
+//
+//	glPopMatrix();
+//}
 
 void handleKeypress(unsigned char key, int x, int y)
 {
@@ -298,6 +404,15 @@ void handleKeypress(unsigned char key, int x, int y)
 	case 62://>
 		selectNext();
 		break;
+
+	case 'r':
+		cameraPrincipal.translateLoc(0, 0, 0.009f);
+		zNear -= 0.009f;
+		break;
+	case 'f':
+		cameraPrincipal.translateLoc(0, 0, -0.009f);
+		zNear += 0.009f;
+		break;
 	}
 		glutPostRedisplay();
 }
@@ -311,7 +426,7 @@ void myreshape(GLsizei w, GLsizei h) // Called at startup and when you move the 
 	double g_Height = wHeight;
 	glViewport(0, 0, g_Width, g_Height);
 	glLoadIdentity();
-	gluPerspective(45, g_Width / g_Height, 0.1f, 500.0f);
+	glFrustum(-1.5, 1.5, -1, 1, zNear, 500.0f);
 }
 
 void translateModel(int selector, double deslocamento)
